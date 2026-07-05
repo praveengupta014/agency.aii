@@ -1,0 +1,115 @@
+import react, { useState,useRef, useEffect } from "react"
+import Navbar from "./components/navbar"
+import Hero from "./components/Hero"
+import TrustedBy from "./components/Trustedby"
+import Services from "./components/Services"
+import Title from "./components/Title"
+import ServiceCard from "./components/ServiceCard"
+import OurWork from "./components/OurWork"
+import Teams from "./components/Teams"
+import ContactUs from "./components/ContactUs"
+import{Toaster} from 'react-hot-toast'
+import Footer from "./components/Footer"
+
+
+function App() {
+  const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'Light')
+
+  const dotRef = useRef(null)
+  const outlineRef = useRef(null)
+
+// Refs for custom cursor Position tracking
+const mouse = useRef({x: 0, y: 0})
+const position = useRef({x: 0, y: 0})
+
+useEffect(() => {
+  const handleMouseMove = (e) => {
+    mouse.current.x = e.clientX
+    mouse.current.y = e.clientY
+  }
+    document.addEventListener('mousemove', handleMouseMove)
+    const animate = () => {
+      position.current.x += (mouse.current.x - position.current.x) * 0.1
+      position.current.y += (mouse.current.y - position.current.y) * 0.1
+
+ if(dotRef.current && outlineRef.current){
+      dotRef.current.style.transform = `translate3d(${mouse.current.x - 6} px,${mouse.current.y - 6}px-0 )`
+      outlineRef.current.style.transform = `translate3d(${position.current.x -20} px,${position.current.y - 20}px,0)`
+}
+       requestAnimationFrame(animate)
+    }
+    animate()
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+    }
+},[])
+  return (
+    <div className='dark:bg-black relative'>
+      <Toaster />
+      <Navbar theme={theme} setTheme={setTheme} />
+      <Hero />
+      <TrustedBy/>
+      <Services />
+      <Title/>
+      <ServiceCard/>
+      <OurWork/>
+      <Teams/>
+      <ContactUs/>
+      <Footer theme={theme}/>
+      {/*  custom cursor ring  */}
+      <div ref={outlineRef} className='fixed top-0 left-0 h-10 w-10 rounded-full border border-primary pointer-events-none z-[9999]'></div>
+
+      {/* custom cursor dot */}
+
+      <div ref={dotRef}className='fixed top-0 left-0 h-3 w-3 rounded-full bg-primary pointer-events-none z-[9999]'></div>
+      
+    </div>
+  )
+} 
+
+export default App
+
+/*import React from 'react'
+import { company_logos } from '../assets/assets-2/assets'
+import { motion } from "motion/react"
+
+function Trustedby() {
+  return (
+    <motion.div 
+    initial={{ opacity: 0, y: 30 }}
+     whileInView={{topacity: 1, y:0}}
+     transition={{ duration: 0.6 }}
+     viewport={{ once: true }}
+
+    className='flex flex-col items-center px-4 sm:px-12 lg:px-24 xl:px-40 gap-10 text-gray-700 dark:text-white/80'>
+        
+        <motion.h3 
+         initial={{ opacity: 0, y: 20 }} 
+         whileInView={{ opacity: 1 }} 
+         transition={{ duration: 0.5 }}
+         viewport={{ once: true }}
+         className='font-semibold'>Trusted by Leading Companies</motion.h3>
+
+        <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        transition={{ staggerChildren: 0.1 }} 
+        viewport={{ once: true }}
+        className='flex items-center justify-center flex-wrap gap-10 m-4'>
+            {company_logos.map((logo, index)=>(
+                <motion.img
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible:{ opacity: 1, y: 0},
+                }}
+                transition= {{ duration: 0.4}}
+                key={index} src={logo} alt="" className='max-h-5 sm:max-h-6 dark:drop-shadow-x1'/>
+                
+
+            ))}
+        </motion.div>
+    </motion.div>
+  )
+}
+
+export default Trustedby
